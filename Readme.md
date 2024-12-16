@@ -1,3 +1,4 @@
+# Palette Reformatter
 A Python command-line based tool to convert between multiple palette formats.
 
 Palette Reformatter currently converts the following file types:
@@ -22,17 +23,18 @@ Tested with Python 3.8.5 on Windows 7.
 
 It is recommended that you add both palette-reformatter.py and palette-reformatter-multi.py to your operating system's PATH variable.
 
-=palette-reformatter.py=
+## palette-reformatter.py
 This script converts a single file from the specified input type to one or more specified output types.
 
-Usage: palette_reformatter \[-h\] \[-n\] \[-a \<input offset\>\] \[-l \<input length\>\] \<input file\> \<input type\> \<output types\> \[\<output types\> ...\]
+### Usage:
+palette_reformatter \[-h\] \[-n\] \[-a \<input offset\>\] \[-l \<input length\>\] \<input file\> \<input type\> \<output types\> \[\<output types\> ...\]
 
-Positional arguments:
+### Positional arguments:
   \<input file\>        Source file path.
   \<input type\>        Input file type.
   \<output types\>      Output file type(s). Can specify multiple types to write more than one file.
 
-Optional arguments:
+### Optional arguments:
   -h, --help            Show help message and exit.
   -n, --noprint         If present, information will not be displayed in the terminal.
   -a \<input offset\>, --inoffset \<input offset\>
@@ -40,15 +42,16 @@ Optional arguments:
   -l \<input length\>, --inlength \<input length\>
                         Number of palette indices to convert in source file (minimum: 1; maximum 256; default: 256). Input length must not exceed the end of the source file.
 
-=palette-reformatter-multi.py=
+## palette-reformatter-multi.py
 This script searches a directory for files of the specified input type and converts them to one or more specified output types.
 
-Usage: palette_reformatter_multi \[-h\] \[-d \<input directory\>\] \<input type\> \[-o \<output types\> \[\<output types\> ...\]\]
+### Usage:
+palette_reformatter_multi \[-h\] \[-d \<input directory\>\] \<input type\> \[-o \<output types\> \[\<output types\> ...\]\]
 
-Positional Arguments:
+### Positional Arguments:
   \<input type\>        Input file type.
 
-Optional arguments:
+### Optional arguments:
   -h, --help            Show help message and exit.
   -d \<input directory\>, --directory \<input directory\>
                         Input directory path. Default is current working directory.

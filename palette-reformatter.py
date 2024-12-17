@@ -204,7 +204,7 @@ def get_data_chunk(data, address_a, address_b):
 	return chunk
 
 def is_raw_type(type):
-	if type in {"bgr15", "rgb15", "bgr9", "32x"}:
+	if type in {"snes", "rgb15", "gen", "32x"}:
 		return True
 	else:
 		return False
@@ -345,7 +345,7 @@ def decode_color(data, address, type, endianness, line_num=None):
 		r = (read_word(data, address, endianness)&0x7C00)>>7
 		g = (read_word(data, address, endianness)&0x03E0)>>2
 		b = (read_word(data, address, endianness)&0x001F)<<3
-	elif type in {"bgr9", "gs0"}:				# 9-bit BGR
+	elif type in {"gen", "gs0"}:				# 9-bit BGR
 		r = (read_word(data, address, endianness)&0x000E)<<4
 		g = (read_word(data, address, endianness)&0x00E0)
 		b = (read_word(data, address, endianness)&0x0E00)>>4
@@ -377,7 +377,7 @@ def encode_color(data, type, r, g, b, endianness, index):
 	elif type == "rgb15":					# 15-bit RGB
 		color = ((red<<7)&0x7C00)|((green<<2)&0x03E0)|((blue>>3)&0x001F)
 		color_bytes = color.to_bytes(2, endianness)
-	elif type == "bgr9":					# 9-bit BGR
+	elif type == "gen":					# 9-bit BGR
 		color = ((red>>4)&0x000E)|(green&0x00E0)|((blue<<4)&0x0E00)
 		color_bytes = color.to_bytes(2, endianness)
 	elif type == "bmp24":					# 24-bit BGR

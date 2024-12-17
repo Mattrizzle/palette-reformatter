@@ -5,16 +5,16 @@ Palette Reformatter currently converts the following file types:
 * 32x:   Raw 15-bit BGR, Big Endian (32X)
 * act:   Adobe Color Table (RAW 24-bit RGB)
 * amp:   Adobe Arbitrary Map File (AMP)
-* snes:  RAW 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
-* gen:   RAW 9-bit BGR, Big Endian (Mega Drive/Genesis)
 * bmp24: 16x16 24Bpp Bitmap (BMP)
 * col:   S-CG-CAD COL File (15-bit BGR)
+* gen:   RAW 9-bit BGR, Big Endian (Mega Drive/Genesis)
 * gpl:   GIMP Palette (GPL) (24-bit RGB)
 * gs0:   Genecyst/Kega/Gens Savestate (GS\*) \*\*INPUT ONLY\*\*
 * jasc:  JASC Palette (24-bit RGB)
 * png8:  16x16 256-color PNG \*\*OUTPUT ONLY\*\*
 * rgb15: RAW 15-bit RGB, Little Endian (Midway IMG files)
 * riff:  RIFF Palette (24-bit RGB)
+* snes:  RAW 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
 * tpl15: Tile Layer Pro 15-bit BGR (TPL)
 * tpl24: Tile Layer Pro 24-bit RGB (TPL)
 * zst:   ZSNES Savestate (ZS\*) \*\*INPUT ONLY\*\*

@@ -7,23 +7,28 @@ Palette Reformatter currently converts the following file types:
 * amp:   Adobe Arbitrary Map File (AMP)
 * bmp24: 16x16 24Bpp Bitmap (BMP)
 * col:   S-CG-CAD COL File (15-bit BGR)
-* gen:   RAW 9-bit BGR, Big Endian (Mega Drive/Genesis)
+* gen:   Raw 9-bit BGR, Big Endian (Mega Drive/Genesis)
+* gg:    Raw 12-bit BGR, Little Endian (Game Gear)
 * gpl:   GIMP Palette (GPL) (24-bit RGB)
 * gs0:   Genecyst/Kega/Gens Savestate (GS\*) \*\*INPUT ONLY\*\*
 * jasc:  JASC Palette (24-bit RGB)
-* png8:  16x16 256-color PNG \*\*OUTPUT ONLY\*\*
-* rgb15: RAW 15-bit RGB, Little Endian (Midway IMG files)
+* pdn:   Paint.NET 96-color TXT
+* png8:  16x16 256-color PNG
+* png24: 24-bit RGB color (8 bits per channel) PNG
+* rgb15: Raw 15-bit RGB, Little Endian (Midway IMG files)
 * riff:  RIFF Palette (24-bit RGB)
-* snes:  RAW 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
+* sms:   Raw 6-bit BGR (Sega Master System)
+* snes:  Raw 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
 * tpl15: Tile Layer Pro 15-bit BGR (TPL)
 * tpl24: Tile Layer Pro 24-bit RGB (TPL)
+* wsc:   Raw 12-bit BGR, Little Endian (WonderSwan Color)
 * zst:   ZSNES Savestate (ZS\*) \*\*INPUT ONLY\*\*
 
 Tested with Python 3.8.5 on Windows 7.
 
-It is recommended that you add both palette-reformatter.py and palette-reformatter-multi.py to your operating system's PATH variable.
+It is recommended that you add both palette_reformatter.py and palette_reformatter_multi.py to your operating system's PATH variable.
 
-## palette-reformatter.py
+## palette_reformatter.py
 This script converts a single file from the specified input type to one or more specified output types.
 
 ### Usage:
@@ -40,14 +45,19 @@ palette_reformatter \[-h\] \[-n\] \[-a \<input offset\>\] \[-l \<input length\>\
   -h, --help            Show help message and exit.
   
   -n, --noprint         If present, information will not be displayed in the terminal.
+
+  -c, --oldconvmethod   If present, the old conversion method will be used for raw types less than 24-bit.
   
   -a \<input offset\>, --inoffset \<input offset\>
-                        Offset of palette to convert in source file. Input offset must not exceed the end of the source file. For GIMP and JASC palettes (intypes gpl and jasc), a line number should be specified instead of an offset.
+                        Offset of palette to convert in source file. Input offset must not exceed the end of the source file. For GIMP, JASC and Paint.NET palettes (intypes gpl, jasc and pdn), a line number should be specified instead of an offset.
 
   -l \<input length\>, --inlength \<input length\>
-                        Number of palette indices to convert in source file (minimum: 1; maximum 256; default: 256). Input length must not exceed the end of the source file.
+                        Number of palette indices to convert in source file. Input length must not exceed the end of the source file.
 
-## palette-reformatter-multi.py
+  -d \<width and height\>, --outdimensions \<width and height\>
+                        Width and height of variable-sized output images.
+
+## palette_reformatter_multi.py
 This script searches a directory for files of the specified input type and converts them to one or more specified output types.
 
 ### Usage:

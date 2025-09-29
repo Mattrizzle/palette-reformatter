@@ -670,6 +670,10 @@ if args.noprint == False:
 	print("\nInput file...")
 	print("\tPath: " + args.infile)
 	print("\tType: " + str(palrfs.format_names[intype_id]))
+	print("\tIndex size: " + str(input_index_size) + (" line" if input_content_type == "text" else " byte") + ("" if input_index_size == 1 else "s"))
+	print("\tContent type: " + f"{input_content_type[0].upper()}{input_content_type[1:]}")
+	print("\tLength type: " + f"{input_length_type[0].upper()}{input_length_type[1:]}")
+	print("\tByte order: " + f"{input_byte_order[0].upper()}{input_byte_order[1:]}" + "-endian")
 
 # Check file format integrity
 if args.intype == "act":	# ACT
@@ -854,7 +858,7 @@ if max_inlength == False:
 	elif input_content_type == "text":
 		max_inlength = len(src_data_text_split)-src_base_address
 	else:
-		max_inlength = src_file_size
+		max_inlength = src_file_size // input_index_size
 
 if input_content_type == "raw" and input_length_type == "variable":
 	if args.noprint == False:
@@ -952,6 +956,10 @@ for x, value in enumerate(outtypes_unique_list):
 		print("\nOutput file " + str(x+1) + " of " + str(len(outtypes_unique_list)) + "...")
 		print("\tPath: " + outfile)
 		print("\tType: " + str(palrfs.format_names[outtype_id]))
+		print("\tIndex size: " + str(output_index_size) + (" line" if output_content_type == "text" else " byte") + ("" if output_index_size == 1 else "s"))
+		print("\tContent type: " +  f"{output_content_type[0].upper()}{output_content_type[1:]}")
+		print("\tLength type: " + f"{output_length_type[0].upper()}{output_length_type[1:]}")
+		print("\tByte order: " +  f"{output_byte_order[0].upper()}{output_byte_order[1:]}" + "-endian")
 		if output_content_type == "image" and output_length_type == "variable":
 			print("\tDimensions: " + str(output_dimensions[0]) + " x " + str(output_dimensions[1]) + "px")
 		print("\tPalette indices: " + str(outlength) + (" (padded from " + str(args.inlength) + ")" if outlength > args.inlength else " (trimmed from " + str(args.inlength) + ")" if output_length_type == "fixed" and args.inlength > outlength else ""))

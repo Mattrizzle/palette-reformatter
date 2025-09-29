@@ -32,7 +32,7 @@ It is recommended that you add both palette_reformatter.py and palette_reformatt
 This script converts a single file from the specified input type to one or more specified output types.
 
 ### Usage:
-palette_reformatter \[-h\] \[-n\] \[-a \<input offset\>\] \[-l \<input length\>\] \<input file\> \<input type\> \<output types\> \[\<output types\> ...\]
+palette_reformatter \[-h\] \[-n\] \[-c\] \<input file\> \<input type\> \[-a \<input offset\>\] \[-l \<input length\>\] \<output types\> \[\<output types\> ...\] \[-d \<width and height\>\]
 
 ### Positional arguments:
   \<input file\>        Source file path.

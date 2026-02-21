@@ -24,6 +24,7 @@ format_outfile_folders = [
 	"indexed-png",
 	"png",
 	"raw-RGB15",
+	"raw-RGB18",
 	"riff-pal",
 	"raw-SMS",
 	"raw-SNES",
@@ -48,6 +49,7 @@ format_outfile_ends = [
 	"-RGB8.png",
 	"-RGB24.png",
 	"-RGB15.bin",
+	"-RGB18.bin",
 	"-RIFF.pal",
 	"-SMS.bin",
 	"-SNES.pal",
@@ -511,6 +513,19 @@ def decode_color(data, address, file_type, content_type, endianness, use_old_con
 			r += (((raw_color >> 10) & 0x001F) >> 2)
 			g += (((raw_color >> 5) & 0x001F) >> 2)
 			b += ((raw_color & 0x001F) >> 2)
+	elif file_type == "rgb18":					# 18-bit RGB
+		raw_red = read_byte(data, address)
+		raw_green = read_byte(data, address+1)
+		raw_blue = read_byte(data, address+2)
+
+		r = raw_red << 2
+		g = raw_green << 2
+		b = raw_blue << 2
+
+		if use_old_conv_method == False:
+			r = r | (raw_red >> 4)
+			g = g | (raw_green >> 4)
+			b = b | (raw_blue >> 4)
 	elif file_type == "sms":					# 6-bit BGR
 		raw_color = read_byte(data, address)
 		raw_red = raw_color & 0x03
@@ -604,6 +619,9 @@ def encode_color(data, file_type, r, g, b, endianness, index, use_old_conv_metho
 	elif file_type == "rgb15":					# 15-bit RGB
 		color = ((r << 7) & 0x7C00) | ((g << 2) & 0x03E0) | ((b >> 3) & 0x001F)
 		color_bytes = color.to_bytes(2, endianness)
+	elif file_type == "rgb18":
+		color = ((r << 14) & 0x3F0000) | ((g << 6) & 0x3F00) | ((b >> 2) & 0x3F)
+		color_bytes = color.to_bytes(3, endianness)
 	elif file_type == "riff": 					# 32-bit RGBX
 		color = r << 24 | g << 16 | b << 8
 		color_bytes = color.to_bytes(4, endianness)
@@ -639,14 +657,14 @@ def generate_footer(data, file_type, length, index_size):
 		file_footer = "".encode('ascii')
 	return file_footer
 
-parser = argparse.ArgumentParser(prog="palette_reformatter", formatter_class=argparse.RawDescriptionHelpFormatter, description="Palette Reformatter\nBy Mattrizzle - https://github.com/Mattrizzle/palette-reformatter\nThis script converts a single palette file from a specified input type to one \nor more specified output types.", epilog=palrfs.generate_file_type_list())
+parser = argparse.ArgumentParser(prog="palette_reformatter", formatter_class=argparse.RawDescriptionHelpFormatter, description="Palette Reformatter\nBy Mattrizzle - https://github.com/Mattrizzle/palette-reformatter\nThis script converts a single palette file from a specified input type to one \nor more specified output types.", epilog=palrfs.print_file_type_list())
 parser.add_argument("-n", "--noprint", action="store_true", help="If present, information will not be displayed in the terminal.")
 parser.add_argument("-c", "--oldconvmethod", action="store_true", help="If present, the old conversion method will be used for raw types less than 24-bit.")
 parser.add_argument("infile", metavar="<input file>", help="Source file path.")
-parser.add_argument("intype", metavar="<input type>", choices=[ x[0] for x in palrfs.formats if x[1] == True ], help="Input file type. (See NOTE below)")
+parser.add_argument("intype", metavar="<input type>", choices=palrfs.build_file_type_choice_list(is_input = True), help="Input file type. (See NOTE below)")
 parser.add_argument("-a", "--inoffset", metavar="<input offset>", type=functools.wraps(int)(functools.partial(int, base=0)), default=0, help="Offset of palette to convert in source file. Input offset must not exceed the end of the source file. For GIMP, JASC and Paint.NET palettes (intypes gpl, jasc and pdn), a line number should be specified instead of an offset.")
 parser.add_argument("-l", "--inlength", metavar="<input length>", type=functools.wraps(int)(functools.partial(int, base=0)), help="Number of palette indices to convert in source file. Input length must not exceed the end of the source file.")
-parser.add_argument("outtype", metavar="<output types>", nargs="+", choices=[ x[0] for x in palrfs.formats if x[2] == True ], help="Output file type(s). Can specify multiple types to write more than one file. (See NOTE below)")
+parser.add_argument("outtype", metavar="<output types>", nargs="+", choices=palrfs.build_file_type_choice_list(is_output = True), help="Output file type(s). Can specify multiple types to write more than one file. (See NOTE below)")
 parser.add_argument("-d", "--outdimensions", metavar="<width and height>", nargs=2, type=functools.wraps(int)(functools.partial(int, base=0)), help="Width and height of variable-sized output images.")
 
 args = parser.parse_args()
@@ -657,6 +675,12 @@ src_data = load_file(args.infile)
 src_file_size = len(src_data)
 
 intype_id = palrfs.find_in_list(args.intype, palrfs.formats)[0]
+
+if intype_id == False:
+	in_alias_id = palrfs.find_in_list(args.intype, palrfs.format_aliases)[0]
+	resolved_intype = palrfs.format_aliases[in_alias_id][1]
+	intype_id = palrfs.find_in_list(resolved_intype, palrfs.formats)[0]
+
 input_index_size = palrfs.formats[intype_id][3]
 input_content_type = palrfs.formats[intype_id][4]
 input_length_type = palrfs.formats[intype_id][5]
@@ -696,7 +720,7 @@ elif args.intype == "bmp24":	# BMP
 	bmp_data_size_read = read_dword(src_data, 0x22, "little")
 
 	if bmp_sig_read != "BM":
-		print("ERROR: Invalid BMP file signature. Expected 'BM' but read '" + bmp_sig_read + "'.")
+		print("ERROR: Invalid BMP file signature. Expected 'BM'.")
 		exit()
 	if bmp_size_read != src_file_size:
 		print("ERROR: Invalid file size in BMP header. Expected '" + str(src_file_size) + "' but read '" + str(bmp_size_read) + "'.")
@@ -720,6 +744,13 @@ elif args.intype == "col":	# COL
 		exit()
 	if src_file_size != 0x400:
 		print("ERROR: Incorrect S-CG-CAD COL file size. Should be 1024 bytes long.")
+		exit()
+
+elif args.intype == "gs0": # GS0
+	gs0_sig_read = get_data_chunk(src_data, 0x0, 0x3).decode('ascii', 'ignore')
+
+	if gs0_sig_read != "GST":
+		print("ERROR: Invalid GS0 file signature. Expected 'GST'.")
 		exit()
 
 elif args.intype == "gpl": # GPL
@@ -857,15 +888,17 @@ if max_inlength == False:
 		max_inlength = len(bitmap_data)
 	elif input_content_type == "text":
 		max_inlength = len(src_data_text_split)-src_base_address
+	elif input_content_type == "raw" and input_length_type == "variable":
+		max_inlength = src_file_size
 	else:
 		max_inlength = src_file_size // input_index_size
 
 if input_content_type == "raw" and input_length_type == "variable":
 	if args.noprint == False:
-		print("\tStarting offset: 0x" + str(format(args.inoffset, '0x').upper()[0:]))
+		print("\tStarting offset: 0x" + str(format(args.inoffset, '0X')[0:]))
 
 	if args.inoffset not in range(max_inlength):
-		print("ERROR: Starting offset 0x" + str(format(args.inoffset, '0x').upper()[0:]) + " outside of range for input file " + args.infile + ".")
+		print("ERROR: Starting offset 0x" + str(format(args.inoffset, '0X')[0:]) + " outside of range for input file " + args.infile + ".")
 		exit()
 else:	# (input_content_type == "image" or input_content_type == "headered-raw") and input_length_type == "fixed"
 	if args.noprint == False:
@@ -895,7 +928,10 @@ else:
 		exit()
 
 if args.noprint == False:
-	print("\tPalette indices: " + str(args.inlength) + " / " + str(max_inlength))
+	if input_content_type == "raw" and input_length_type == "variable":
+		print("\tPalette indices: " + str(args.inlength) + " / " + str(max_inlength // input_index_size))
+	else:
+		print("\tPalette indices: " + str(args.inlength) + " / " + str(max_inlength))
 
 if args.outdimensions:
 	output_dimensions = list(args.outdimensions)
@@ -910,6 +946,12 @@ else:
 
 for x, value in enumerate(outtypes_unique_list):
 	outtype_id = palrfs.find_in_list(value, palrfs.formats)[0]
+
+	if intype_id == False:
+		out_alias_id = palrfs.find_in_list(value, palrfs.format_aliases)[0]
+		resolved_outtype = palrfs.format_aliases[out_alias_id][1]
+		outtype_id = palrfs.find_in_list(resolved_outtype, palrfs.formats)[0]
+
 	output_index_size = palrfs.formats[outtype_id][3]
 	output_content_type = palrfs.formats[outtype_id][4]
 	output_length_type = palrfs.formats[outtype_id][5]
@@ -929,16 +971,21 @@ for x, value in enumerate(outtypes_unique_list):
 		zst_extension_find = r'(?i)\.(z[1-9s][0-9t])$'
 		zst_extension_replace =  r'_\1'
 
-		outfile = output_directory + os.sep + re.sub(zst_extension_find, zst_extension_replace, output_filename) + format_outfile_ends[outtype_id]
+		outfile = output_directory + os.sep + re.sub(zst_extension_find, zst_extension_replace, output_filename)
 	elif args.intype == "gs0":
 		gsx_extension_find = r'(?i)\.(gs[0-9x])$'
 		gsx_extension_replace =  r'_\1'
 
-		outfile = output_directory + os.sep + re.sub(gsx_extension_find, gsx_extension_replace, output_filename) + format_outfile_ends[outtype_id]
+		outfile = output_directory + os.sep + re.sub(gsx_extension_find, gsx_extension_replace, output_filename)
 	elif len(args.infile.split(format_outfile_ends[intype_id])) > 1:
-		outfile = output_directory + os.sep + output_filename.rsplit(format_outfile_ends[intype_id], 1)[0] + format_outfile_ends[outtype_id]
+		outfile = output_directory + os.sep + output_filename.rsplit(format_outfile_ends[intype_id], 1)[0]
 	else:
-		outfile = output_directory + os.sep + output_filename.rsplit(".", 1)[0] + format_outfile_ends[outtype_id]
+		outfile = output_directory + os.sep + output_filename.rsplit(".", 1)[0]
+
+	if args.inoffset:
+		outfile += "-" + str(format(args.inoffset, '0X')) + format_outfile_ends[outtype_id]
+	else:
+		outfile += format_outfile_ends[outtype_id]
 
 	if value in {"gpl", "pdn"}:
 		label = output_filename.rsplit(".", 1)[0]

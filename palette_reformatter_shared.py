@@ -13,7 +13,8 @@ formats = [
 	["pdn",		True,		True,		1,		"text",		"fixed",	"big"],		# Index size is in lines rather than bytes, as Paint.NET palettes are text-based
 	["png8",	True,		True,		3,		"image",	"fixed",	"big"],	
 	["png24",	True,		True,		3,		"image",	"variable",	"big"],	
-	["rgb15",	True,		True,		2,		"raw",		"variable",	"little"],	
+	["rgb15",	True,		True,		2,		"raw",		"variable",	"little"],
+	["rgb18",	True,		True,		3,		"raw",		"variable",	"big"],
 	["riff",	True,		True,		4,		"headered-raw",	"fixed",	"big"],	
 	["sms",		True,		True,		1,		"raw",		"variable",	"little"],
 	["snes",	True,		True,		2,		"raw",		"variable",	"little"],	
@@ -22,6 +23,16 @@ formats = [
 	["wsc",		True,		True,		2,		"raw",		"variable",	"little"],
 	["zst",		True,		False,		2,		"raw",		"fixed",	"little"]
 ]
+
+format_aliases = [
+#	Alias		Type Name
+	["gba",		"snes"],
+	["gbc",		"snes"],
+	["md",		"gen"],
+	["psx",		"snes"],
+	["rgb24",	"act"]
+]
+
 # Input type?: True if this format appears in the list of valid input types, False if it does not
 # Output type?: True if this format appears in the list of valid output types, False if it does not
 # Index Size: Length of each color in the file
@@ -38,12 +49,13 @@ format_names = [
 	"Raw 9-bit BGR, Big Endian (Mega Drive/Genesis)",
 	"Raw 12-bit BGR, Little Endian (Game Gear)",
 	"GIMP Palette (GPL) (24-bit RGB)",
-	"Genecyst/Kega/Gens Savestate (GS*)",
+	"Genecyst/Kega/Gens MD/Genesis Savestate (GS*)",
 	"JASC Palette (24-bit RGB)",
 	"Paint.NET 96-color TXT",
 	"16x16 256-color PNG",
 	"24-bit RGB color (8 bits per channel) PNG",
 	"Raw 15-bit RGB, Little Endian (Midway IMG files)",
+	"Raw 18-bit RGB, Big Endian",
 	"RIFF Palette (24-bit RGB)",
 	"Raw 6-bit BGR (Sega Master System)",
 	"Raw 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)",
@@ -62,14 +74,58 @@ def find_in_list(value_to_search, list_to_search):
 			continue
 	return [False, False]  # whatever one wants to get if value not found
 
-def generate_file_type_list():
+def print_file_type_list(content_type = None, length_type = None):
 	file_type_list = "NOTE: The following input/output file types are available:\n"
 
 	for x, value in enumerate(formats):
-		if value[1] == False and value[2] == False:
+		if content_type != None and value[4] != content_type:
+			continue
+		elif length_type != None and value[5] != length_type:
+			continue
+		elif value[1] == False and value[2] == False:
 			continue
 		else:
 			shortname = value[0] + ":"
 			file_type_list += f"  {shortname:<7}{format_names[x]}" 
 			file_type_list += " **OUTPUT ONLY**\n" if value[1] == False else " **INPUT ONLY**\n" if value[2] == False else "\n"
+	for x, value in enumerate(format_aliases):
+		resolved_type_id = find_in_list(value[1], formats)[0]
+		short_aliasname = value[0] + ":"
+		file_type_list += f"  {short_aliasname:<7}Alias for {formats[resolved_type_id][0]}\n"
+
 	return file_type_list
+
+def build_file_type_choice_list(is_input = None, is_output = None, content_type = None, length_type = None):
+	choice_list = []
+
+	for x in formats:
+		if content_type != None and x[4] != content_type:
+			continue
+		elif length_type != None and x[5] != length_type:
+			continue
+		elif is_input != None and x[1] != is_input:
+			continue
+		elif is_output != None and x[2] != is_output:
+			continue
+		else:
+			choice_list.append(x[0])
+
+	for x in format_aliases:
+		resolved_type_id = find_in_list(x[1], formats)[0]
+		resolved_is_input = formats[resolved_type_id][1]
+		resolved_is_output = formats[resolved_type_id][2]
+		resolved_content_type = formats[resolved_type_id][4]
+		resolved_length_type = formats[resolved_type_id][5]
+
+		if content_type != None and resolved_content_type != content_type:
+			continue
+		elif length_type != None and resolved_length_type != length_type:
+			continue
+		elif is_input != None and resolved_is_input != is_input:
+			continue
+		elif is_output != None and resolved_is_output != is_output:
+			continue
+		else:
+			choice_list.append(x[0])
+
+	return choice_list

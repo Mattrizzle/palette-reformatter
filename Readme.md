@@ -2,29 +2,30 @@
 A Python command-line based tool to convert between multiple palette formats.
 
 Palette Reformatter currently converts the following file types:
-* 32x:   Raw 15-bit BGR, Big Endian (32X)
-* act:   Adobe Color Table (RAW 24-bit RGB)
-* amp:   Adobe Arbitrary Map File (AMP)
-* bmp24: 16x16 24Bpp Bitmap (BMP)
-* col:   S-CG-CAD COL File (15-bit BGR)
-* gen:   Raw 9-bit BGR, Big Endian (Mega Drive/Genesis)
-* gg:    Raw 12-bit BGR, Little Endian (Game Gear)
-* gpl:   GIMP Palette (GPL) (24-bit RGB)
-* gs0:   Genecyst/Kega/Gens Savestate (GS\*) \*\*INPUT ONLY\*\*
-* jasc:  JASC Palette (24-bit RGB)
-* pdn:   Paint.NET 96-color TXT
-* png8:  16x16 256-color PNG
-* png24: 24-bit RGB color (8 bits per channel) PNG
-* rgb15: Raw 15-bit RGB, Little Endian (Midway IMG files)
-* riff:  RIFF Palette (24-bit RGB)
-* sms:   Raw 6-bit BGR (Sega Master System)
-* snes:  Raw 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
-* tpl15: Tile Layer Pro 15-bit BGR (TPL)
-* tpl24: Tile Layer Pro 24-bit RGB (TPL)
-* wsc:   Raw 12-bit BGR, Little Endian (WonderSwan Color)
-* zst:   ZSNES Savestate (ZS\*) \*\*INPUT ONLY\*\*
+* 32x:               Raw 15-bit BGR, Big Endian (32X)
+* act/rgb24:         Adobe Color Table (RAW 24-bit RGB)
+* amp:               Adobe Arbitrary Map File (AMP)
+* bmp24:             16x16 24Bpp Bitmap (BMP)
+* col:               S-CG-CAD COL File (15-bit BGR)
+* gen/md:            Raw 9-bit BGR, Big Endian (Mega Drive/Genesis)
+* gg:                Raw 12-bit BGR, Little Endian (Game Gear)
+* gpl:               GIMP Palette (GPL) (24-bit RGB)
+* gs0:               Genecyst/Kega/Gens/Genesis Savestate (GS\*) \*\*INPUT ONLY\*\*
+* jasc:              JASC Palette (24-bit RGB)
+* pdn:               Paint.NET 96-color TXT
+* png8:              16x16 256-color PNG
+* png24:             24-bit RGB color (8 bits per channel) PNG
+* rgb15:             Raw 15-bit RGB, Little Endian (Midway IMG files)
+* rgb18:             Raw 18-bit RGB, Big Endian
+* riff:              RIFF Palette (24-bit RGB)
+* sms:               Raw 6-bit BGR (Sega Master System)
+* snes/psx/gbc/gba:  Raw 15-bit BGR, Little Endian (SNES, PSX, GBC, GBA)
+* tpl15:             Tile Layer Pro 15-bit BGR (TPL)
+* tpl24:             Tile Layer Pro 24-bit RGB (TPL)
+* wsc:               Raw 12-bit BGR, Little Endian (WonderSwan Color)
+* zst:               ZSNES Savestate (ZS\*) \*\*INPUT ONLY\*\*
 
-Tested with Python 3.8.5 on Windows 7.
+Tested with Python 3.8.5 on Windows 7 and Python 3.14 on Windows 11.
 
 It is recommended that you add both palette_reformatter.py and palette_reformatter_multi.py to your operating system's PATH variable.
 

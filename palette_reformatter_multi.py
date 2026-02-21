@@ -4,7 +4,7 @@ import argparse
 import subprocess
 import re
 
-multi_parser = argparse.ArgumentParser(prog="palette_reformatter_multi", formatter_class=argparse.RawDescriptionHelpFormatter, description="Multiple-File Palette Reformatter\nBy Mattrizzle - https://github.com/Mattrizzle/palette-reformatter\nThis script searches a directory for files of the specified input type and \nconverts them to one or more specified output types.", epilog=palrfs.generate_file_type_list())
+multi_parser = argparse.ArgumentParser(prog="palette_reformatter_multi", formatter_class=argparse.RawDescriptionHelpFormatter, description="Multiple-File Palette Reformatter\nBy Mattrizzle - https://github.com/Mattrizzle/palette-reformatter\nThis script searches a directory for files of the specified input type and \nconverts them to one or more specified output types.", epilog=palrfs.print_file_type_list())
 multi_parser.add_argument("-d", "--directory", metavar="<input directory>", default=os.getcwd().replace("\\", "/"), help="Input directory path. Default is current working directory.")
 multi_parser.add_argument("intype", metavar="<input type>", choices=[ x[0] for x in palrfs.formats if x[1] == True ], help="Input file type. (See NOTE below)")
 multi_parser.add_argument("-o", "--outtype", metavar="<output types>", nargs="+", choices=[ x[0] for x in palrfs.formats if x[2] == True ], help="Output file type(s). Can specify multiple types to write more than one file. (See NOTE below)")
@@ -26,6 +26,7 @@ multi_format_syntaxes = [
 	"(?i)(-RGB8){0,1}\.png",
 	"(?i)(-RGB24){0,1}\.png",
 	"(?i)-RGB15\.bin",
+	"(?i)-RGB18\.bin",
 	"(?i)(-RIFF){0,1}\.pal",
 	"(?i)-SMS\.bin",
 	"(?i)-SNES\.pal",
